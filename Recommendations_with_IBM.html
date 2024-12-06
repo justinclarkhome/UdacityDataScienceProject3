@@ -8612,7 +8612,7 @@ The 3 most similar users to user 46 are: [4201, 23, 3782]
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">user_id</span> <span class="o">=</span> <span class="mi">131</span>
@@ -8667,7 +8667,10 @@ The 3 most similar users to user 46 are: [4201, 23, 3782]
     <span class="n">neighbors_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">({</span>
         <span class="s1">'similarity'</span><span class="p">:</span> <span class="n">user_item</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">similar_users_by_count</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">base_user_scores</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
         <span class="s1">'num_interactions'</span><span class="p">:</span> <span class="n">similar_users_by_count</span><span class="p">,</span>
-    <span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="s1">'neighbor_id'</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">'similarity'</span><span class="p">,</span> <span class="s1">'num_interactions'</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="s1">'neighbor_id'</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">'similarity'</span><span class="p">,</span> <span class="s1">'num_interactions'</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># reset the index so iloc works as expected</span>
+    <span class="n">neighbors_df</span> <span class="o">=</span> <span class="n">neighbors_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">neighbors_df</span> <span class="c1"># Return the dataframe specified in the doc_string</span>
 
@@ -8786,9 +8789,12 @@ The top 10 recommendations for user 20 are the following article names:
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1">### Tests with a dictionary of results</span>
+<span class="c1"># I changed these to iloc per the reviewer's comment (and made sure the function calls reset_index so iloc is correct)</span>
 
-<span class="n">user1_most_sim</span> <span class="o">=</span> <span class="n">get_top_sorted_users</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">neighbor_id</span> <span class="c1"># 3933, Find the user that is most similar to user 1 </span>
-<span class="n">user131_10th_sim</span> <span class="o">=</span> <span class="n">get_top_sorted_users</span><span class="p">(</span><span class="mi">131</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">neighbor_id</span> <span class="c1"># 242, Find the 10th most similar user to user 131</span>
+<span class="n">user1_most_sim</span> <span class="o">=</span> <span class="n">get_top_sorted_users</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">neighbor_id</span> <span class="c1"># 3933, Find the user that is most similar to user 1 </span>
+
+<span class="c1"># remember Python is base 0 (so 10th element is iloc 9)</span>
+<span class="n">user131_10th_sim</span> <span class="o">=</span> <span class="n">get_top_sorted_users</span><span class="p">(</span><span class="mi">131</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">neighbor_id</span> <span class="c1"># 242, Find the 10th most similar user to user 131</span>
 </pre></div>
 </div>
 </div>
@@ -8904,7 +8910,7 @@ The top 10 recommendations for user 20 are the following article names:
 <td>158</td>
 </tr>
 <tr>
-<th>8</th>
+<th>5</th>
 <td>98</td>
 <td>29</td>
 <td>170</td>
@@ -8916,37 +8922,37 @@ The top 10 recommendations for user 20 are the following article names:
 <td>169</td>
 </tr>
 <tr>
-<th>5</th>
+<th>7</th>
 <td>49</td>
 <td>29</td>
 <td>147</td>
 </tr>
 <tr>
-<th>7</th>
+<th>8</th>
 <td>3697</td>
 <td>29</td>
 <td>145</td>
 </tr>
 <tr>
-<th>10</th>
+<th>9</th>
 <td>242</td>
 <td>25</td>
 <td>148</td>
 </tr>
 <tr>
-<th>9</th>
+<th>10</th>
 <td>3910</td>
 <td>25</td>
 <td>147</td>
 </tr>
 <tr>
-<th>12</th>
+<th>11</th>
 <td>40</td>
 <td>24</td>
 <td>78</td>
 </tr>
 <tr>
-<th>11</th>
+<th>12</th>
 <td>4932</td>
 <td>24</td>
 <td>76</td>
@@ -8958,13 +8964,13 @@ The top 10 recommendations for user 20 are the following article names:
 <td>142</td>
 </tr>
 <tr>
-<th>15</th>
+<th>14</th>
 <td>3740</td>
 <td>23</td>
 <td>140</td>
 </tr>
 <tr>
-<th>14</th>
+<th>15</th>
 <td>52</td>
 <td>23</td>
 <td>132</td>
@@ -8988,7 +8994,7 @@ The top 10 recommendations for user 20 are the following article names:
 <td>137</td>
 </tr>
 <tr>
-<th>20</th>
+<th>19</th>
 <td>4785</td>
 <td>21</td>
 <td>136</td>
